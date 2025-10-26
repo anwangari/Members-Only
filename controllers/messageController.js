@@ -6,7 +6,7 @@ exports.index = async (req, res) => {
     const messages = await Message.findAll();
     res.render('index', { title: 'Members Only', messages });
   } catch (err) {
-    res.render('error', { message: 'Could not load messages.' });
+    res.render('error', { title: 'Error', message: 'Could not load messages.' });
   }
 };
 
@@ -23,7 +23,7 @@ exports.new_message_post = async (req, res) => {
     req.flash('success_msg', 'Message created!');
     res.redirect('/');
   } catch (err) {
-    res.render('error', { message: 'Could not create message.' });
+    res.render('error', { title: 'Error', message: 'Could not create message.' });
   }
 };
 
@@ -34,6 +34,6 @@ exports.delete_message = async (req, res) => {
     req.flash('success_msg', 'Message deleted.');
     res.redirect('/');
   } catch (err) {
-    res.render('error', { message: 'Failed to delete message.' });
+    res.render('error', { title: 'Error', message: 'Failed to delete message.' });
   }
 };

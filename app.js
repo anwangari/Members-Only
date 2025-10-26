@@ -6,6 +6,7 @@ const session = require('express-session');
 const passport = require('passport');
 const flash = require('connect-flash');
 const methodOverride = require('method-override');
+const expressLayouts = require('express-ejs-layouts');
 
 // Initialize app
 const app = express();
@@ -16,6 +17,8 @@ require('./config/passportConfig')(passport);
 // View engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.use(expressLayouts);
+app.set('layout', 'layout');
 
 // Middleware
 app.use(express.urlencoded({ extended: false }));
@@ -46,6 +49,13 @@ app.use((req, res, next) => {
   next();
 });
 
+// Fallback Middleware to ensure app has title all the time
+app.use((req, res, next) => {
+    res.locals.title = res.locals.title || 'Members Only';
+    next();
+  });
+  
+
 // Routes
 const authRoutes = require('./routes/auth');
 const messageRoutes = require('./routes/message');
@@ -57,7 +67,7 @@ app.use('/member', memberRoutes);
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).render('error', { message: 'Page Not Found' });
+  res.status(404).render('error', { title: '404', message: 'Page Not Found' });
 });
 
 module.exports = app;

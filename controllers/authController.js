@@ -38,7 +38,7 @@ exports.signup_post = [
       res.redirect('/login');
     } catch (err) {
       console.error(err);
-      res.render('error', { message: 'Signup failed. Try again.' });
+      res.render('error', { title: 'Error', message: 'Signup failed. Try again.' });
     }
   },
 ];
