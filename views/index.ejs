@@ -1,0 +1,31 @@
+<% layout('layout') %>
+<h2>All Messages</h2>
+
+<% if (currentUser) { %>
+  <a href="/messages/new">+ New Message</a>
+  <% if (!currentUser.is_member) { %>
+    <p><a href="/member/join">Join the Club</a></p>
+  <% } %>
+  <% if (!currentUser.is_admin) { %>
+    <p><a href="/member/admin">Become Admin</a></p>
+  <% } %>
+<% } %>
+
+<ul>
+  <% messages.forEach(m => { %>
+    <li>
+      <strong><%= m.title %></strong><br>
+      <%= m.text %><br>
+      <% if (currentUser && currentUser.is_member) { %>
+        <em>By <%= m.first_name %> <%= m.last_name %> - <%= m.created_at.toLocaleString() %></em>
+      <% } else { %>
+        <em>By Anonymous</em>
+      <% } %>
+      <% if (currentUser && currentUser.is_admin) { %>
+        <form method="POST" action="/messages/<%= m.id %>/delete">
+          <button type="submit">Delete</button>
+        </form>
+      <% } %>
+    </li>
+  <% }) %>
+</ul>

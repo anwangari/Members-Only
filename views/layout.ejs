@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header>
+    <h1>Members Only</h1>
+    <% if (currentUser) { %>
+      <p>Welcome, <%= currentUser.first_name %>!</p>
+      <a href="/logout">Logout</a>
+    <% } else { %>
+      <a href="/login">Login</a> | <a href="/signup">Sign Up</a>
+    <% } %>
+    <hr>
+  </header>
+
+  <% if (success_msg) { %><div class="flash success"><%= success_msg %></div><% } %>
+  <% if (error_msg) { %><div class="flash error"><%= error_msg %></div><% } %>
+
+  <main><%- body %></main>
+</body>
+</html>
