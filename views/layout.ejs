@@ -1,24 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
-  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <header>
-    <h1>Members Only</h1>
-    <% if (currentUser) { %>
-      <p>Welcome, <%= currentUser.first_name %>!</p>
-      <a href="/logout">Logout</a>
-    <% } else { %>
-      <a href="/login">Login</a> | <a href="/signup">Sign Up</a>
-    <% } %>
-    <hr>
+    <h1>Members Only Club</h1>
+    <nav>
+      <% if (currentUser) { %>
+        <span>Hello, <%= currentUser.first_name %>!</span>
+        <% if (currentUser.is_member) { %>
+          <span>(Member)</span>
+        <% } %>
+        <% if (currentUser.is_admin) { %>
+          <span>(Admin)</span>
+        <% } %>
+        | <a href="/logout">Logout</a>
+      <% } else { %>
+        <a href="/login">Login</a> | <a href="/signup">Sign Up</a>
+      <% } %>
+    </nav>
   </header>
 
-  <% if (success_msg) { %><div class="flash success"><%= success_msg %></div><% } %>
-  <% if (error_msg) { %><div class="flash error"><%= error_msg %></div><% } %>
+  <main>
+    <% if (success_msg && success_msg.length > 0) { %>
+      <div class="flash success"><%= success_msg %></div>
+    <% } %>
+    
+    <% if (error_msg && error_msg.length > 0) { %>
+      <div class="flash error"><%= error_msg %></div>
+    <% } %>
+    
+    <% if (error && error.length > 0) { %>
+      <div class="flash error"><%= error %></div>
+    <% } %>
 
-  <main><%- body %></main>
+    <%- body %>
+  </main>
 </body>
 </html>
