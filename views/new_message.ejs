@@ -1,0 +1,12 @@
+<h2>Create New Message</h2>
+
+<form action="/messages/new" method="POST">
+  <label for="title">Title:</label><br>
+  <input type="text" id="title" name="title" placeholder="Message Title" required><br><br>
+  
+  <label for="text">Message:</label><br>
+  <textarea id="text" name="text" rows="6" cols="50" placeholder="Write your message here..." required></textarea><br><br>
+  
+  <button type="submit">Post Message</button>
+  <a href="/">Cancel</a>
+</form>

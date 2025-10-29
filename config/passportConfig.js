@@ -3,7 +3,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('../models/user');
 
-module.exports = function (passport) {
+module.exports = function(passport) {
   // Local strategy for username/password login
   passport.use(
     new LocalStrategy(async (username, password, done) => {
