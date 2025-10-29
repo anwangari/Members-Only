@@ -1,4 +1,3 @@
-// app.js
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
@@ -8,66 +7,68 @@ const flash = require('connect-flash');
 const methodOverride = require('method-override');
 const expressLayouts = require('express-ejs-layouts');
 
-// Initialize app
 const app = express();
 
 // Passport config
 require('./config/passportConfig')(passport);
 
-// View engine setup
+// View engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(expressLayouts);
 app.set('layout', 'layout');
 
-// Middleware
+// Body parser
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+
+// Static files
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Method override
 app.use(methodOverride('_method'));
 
-// Session middleware
+// Session
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || 'supersecretkey',
+    secret: process.env.SESSION_SECRET || 'secret',
     resave: false,
     saveUninitialized: false,
+    cookie: { maxAge: 1000 * 60 * 60 * 24 } // 24 hours
   })
 );
 
-// Initialize passport and session
+// Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Flash messages
 app.use(flash());
 
-// Global variables (for templates)
+// Global variables
 app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
-  res.locals.error = req.flash('error'); // Passport errors
+  res.locals.error = req.flash('error');
+  res.locals.title = 'Members Only';
   next();
 });
 
-// Fallback Middleware to ensure app has title all the time
-app.use((req, res, next) => {
-    res.locals.title = res.locals.title || 'Members Only';
-    next();
-  });
-  
-
 // Routes
-const authRoutes = require('./routes/auth');
-const messageRoutes = require('./routes/message');
-const memberRoutes = require('./routes/member');
-
-app.use('/', authRoutes);
-app.use('/messages', messageRoutes);
-app.use('/member', memberRoutes);
+app.use('/', require('./routes/auth'));
+app.use('/messages', require('./routes/message'));
+app.use('/member', require('./routes/member'));
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).render('error', { title: '404', message: 'Page Not Found' });
+  res.status(404).render('error', { title: '404 Not Found', message: 'Page not found' });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).render('error', { title: 'Error', message: 'Something went wrong' });
 });
 
 module.exports = app;
