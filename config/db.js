@@ -1,20 +1,16 @@
-// config/db.js
 require('dotenv').config();
 const { Pool } = require('pg');
 
-// Create a single shared connection pool
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-// Optional: Log a confirmation message when connected
 pool.on('connect', () => {
-  console.log('🟢 PostgreSQL connected');
+  console.log('✅ Connected to PostgreSQL database');
 });
 
-// Optional: Handle errors globally
 pool.on('error', (err) => {
-  console.error('❌ Unexpected PostgreSQL error', err);
+  console.error('❌ Unexpected database error:', err);
   process.exit(-1);
 });
 

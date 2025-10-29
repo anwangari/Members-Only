@@ -1,20 +1,20 @@
-// config/passportConfig.js
-const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const User = require('../models/user');
+const bcrypt = require('bcryptjs');
+const pool = require('./db');
 
 module.exports = function(passport) {
-  // Local strategy for username/password login
   passport.use(
-    new LocalStrategy(async (username, password, done) => {
+    new LocalStrategy({ usernameField: 'username' }, async (username, password, done) => {
       try {
-        const user = await User.findByUsername(username);
+        const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+        const user = result.rows[0];
+
         if (!user) {
           return done(null, false, { message: 'Incorrect username.' });
         }
 
-        const isValid = await User.validatePassword(password, user.password_hash);
-        if (!isValid) {
+        const isMatch = await bcrypt.compare(password, user.password_hash);
+        if (!isMatch) {
           return done(null, false, { message: 'Incorrect password.' });
         }
 
@@ -25,16 +25,14 @@ module.exports = function(passport) {
     })
   );
 
-  // Serialize user into the session
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });
 
-  // Deserialize user from the session
   passport.deserializeUser(async (id, done) => {
     try {
-      const user = await User.findById(id);
-      done(null, user);
+      const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+      done(null, result.rows[0]);
     } catch (err) {
       done(err);
     }

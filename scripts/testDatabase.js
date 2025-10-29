@@ -1,16 +1,17 @@
-// scripts/testDatabase.js
 require('dotenv').config();
 const pool = require('../config/db');
 
-(async () => {
+async function testConnection() {
   try {
-    const result = await pool.query('SELECT NOW() AS current_time');
-    console.log('✅ Connected to PostgreSQL successfully.');
-    console.log('Current time on server:', result.rows[0].current_time);
+    const result = await pool.query('SELECT NOW()');
+    console.log('✅ Database connection successful');
+    console.log('Current time:', result.rows[0].now);
   } catch (err) {
-    console.error('❌ Database connection failed:\n', err.message);
+    console.error('❌ Database connection failed:', err.message);
   } finally {
     await pool.end();
-    console.log('🔴 Connection closed.');
+    console.log('🔴 Connection closed');
   }
-})();
+}
+
+testConnection();

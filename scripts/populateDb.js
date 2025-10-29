@@ -1,17 +1,20 @@
-// scripts/populateDb.js
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const pool = require('../config/db');
 
-async function populate() {
+async function populateDatabase() {
   try {
-    console.log('🚀 Starting database population...');
+    console.log('🚀 Starting database setup...');
 
-    // Drop and recreate tables
+    // Drop existing tables
     await pool.query(`
-      DROP TABLE IF EXISTS messages;
-      DROP TABLE IF EXISTS users;
+      DROP TABLE IF EXISTS messages CASCADE;
+      DROP TABLE IF EXISTS users CASCADE;
+    `);
+    console.log('✅ Dropped existing tables');
 
+    // Create users table
+    await pool.query(`
       CREATE TABLE users (
         id SERIAL PRIMARY KEY,
         first_name VARCHAR(50) NOT NULL,
@@ -20,59 +23,63 @@ async function populate() {
         password_hash VARCHAR(255) NOT NULL,
         is_member BOOLEAN DEFAULT false,
         is_admin BOOLEAN DEFAULT false,
-        created_at TIMESTAMP DEFAULT NOW()
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+    `);
+    console.log('✅ Created users table');
 
+    // Create messages table
+    await pool.query(`
       CREATE TABLE messages (
         id SERIAL PRIMARY KEY,
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        title VARCHAR(150) NOT NULL,
+        title VARCHAR(255) NOT NULL,
         text TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT NOW()
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+    console.log('✅ Created messages table');
 
-    console.log('✅ Tables created.');
+    // Hash passwords
+    const hash1 = await bcrypt.hash('password123', 10);
+    const hash2 = await bcrypt.hash('password123', 10);
+    const hash3 = await bcrypt.hash('password123', 10);
 
-    // Create sample users
-    const password = await bcrypt.hash('password123', 10);
-    const memberPass = await bcrypt.hash('memberpass', 10);
-    const adminPass = await bcrypt.hash('adminpass', 10);
-
-    const { rows: users } = await pool.query(
-      `
+    // Insert sample users
+    const userResult = await pool.query(`
       INSERT INTO users (first_name, last_name, username, password_hash, is_member, is_admin)
       VALUES
-        ('Alice', 'Mwangi', 'alice@example.com', $1, false, false),
-        ('Brian', 'Otieno', 'brian@example.com', $2, true, false),
-        ('Cynthia', 'Njoroge', 'cynthia@example.com', $3, true, true)
+        ('Alice', 'Johnson', 'alice@example.com', $1, false, false),
+        ('Bob', 'Smith', 'bob@example.com', $2, true, false),
+        ('Charlie', 'Admin', 'charlie@example.com', $3, true, true)
       RETURNING id;
-      `,
-      [password, memberPass, adminPass]
-    );
+    `, [hash1, hash2, hash3]);
+    console.log('✅ Created sample users');
 
-    console.log('✅ Users inserted:', users.map(u => u.id));
-
-    // Create sample messages
-    await pool.query(
-      `
+    // Insert sample messages
+    await pool.query(`
       INSERT INTO messages (user_id, title, text)
       VALUES
-        ($1, 'Welcome to the Club', 'Glad to have joined this awesome space!'),
-        ($2, 'My First Post', 'It feels great being a member.'),
-        ($3, 'Admin Note', 'Please keep posts respectful and fun.');
-      `,
-      [users[0].id, users[1].id, users[2].id]
-    );
+        ($1, 'Welcome!', 'Hello everyone! Excited to be part of this community.'),
+        ($2, 'First Post', 'This is my first message as a member!'),
+        ($3, 'Admin Note', 'Welcome to the Members Only club. Please keep discussions respectful.');
+    `, [userResult.rows[0].id, userResult.rows[1].id, userResult.rows[2].id]);
+    console.log('✅ Created sample messages');
 
-    console.log('✅ Messages inserted.');
-    console.log('🎉 Database populated successfully.');
+    console.log('\n🎉 Database populated successfully!');
+    console.log('\nSample accounts:');
+    console.log('1. alice@example.com / password123 (Regular user)');
+    console.log('2. bob@example.com / password123 (Member)');
+    console.log('3. charlie@example.com / password123 (Admin)');
+    console.log('\nClub passcode: secret123');
+    console.log('Admin passcode: admin123\n');
+
   } catch (err) {
-    console.error('❌ Error populating database:\n', err.message);
+    console.error('❌ Error:', err);
   } finally {
     await pool.end();
-    console.log('🔴 Connection closed.');
+    console.log('🔴 Database connection closed');
   }
 }
 
-populate();
+populateDatabase();
