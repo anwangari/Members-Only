@@ -1,24 +1,38 @@
 <h2>Create New Message</h2>
 
-<% if (errors.length > 0) { %>
-  <ul class="errors">
-    <% errors.forEach(function(error) { %>
-      <li><%= error.msg %></li>
-    <% }); %>
-  </ul>
+<% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+  <div class="flash error">
+    <ul>
+      <% errors.forEach(error => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  </div>
 <% } %>
 
 <form action="/messages/new" method="POST">
-  <div>
-    <label for="title">Title:</label>
-    <input type="text" id="title" name="title" value="<%= formData.title || '' %>" required>
-  </div>
-
-  <div>
-    <label for="text">Message:</label>
-    <textarea id="text" name="text" rows="5" required><%= formData.text || '' %></textarea>
-  </div>
-
+  <label for="title">Title:</label><br>
+  <input 
+    type="text" 
+    id="title" 
+    name="title" 
+    placeholder="Message Title" 
+    value="<%= typeof formData !== 'undefined' ? formData.title : '' %>"
+    maxlength="150"
+    required
+  ><br><br>
+  
+  <label for="text">Message:</label><br>
+  <textarea 
+    id="text" 
+    name="text" 
+    rows="6" 
+    cols="50" 
+    placeholder="Write your message here..." 
+    maxlength="5000"
+    required
+  ><%= typeof formData !== 'undefined' ? formData.text : '' %></textarea><br><br>
+  
   <button type="submit">Post Message</button>
   <a href="/">Cancel</a>
 </form>

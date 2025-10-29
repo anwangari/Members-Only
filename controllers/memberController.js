@@ -1,41 +1,51 @@
 const User = require('../models/user');
 
-// GET join the club
+// GET join club page
 exports.join_get = (req, res) => {
   res.render('join_club', { title: 'Join the Club' });
 };
 
-// POST join the club
+// POST join club
 exports.join_post = async (req, res) => {
   const { passcode } = req.body;
-  const clubPass = process.env.CLUB_PASSCODE || 'secret123';
+  const correctPasscode = process.env.CLUB_PASSCODE || 'secret123';
 
-  if (passcode === clubPass) {
-    await User.updateMembership(req.user.id, true);
-    req.flash('success_msg', 'You are now a club member!');
-    res.redirect('/');
+  if (passcode === correctPasscode) {
+    try {
+      await User.updateMembership(req.user.id, true);
+      req.flash('success_msg', 'Welcome to the club! You can now see message authors.');
+      res.redirect('/');
+    } catch (err) {
+      console.error('Join club error:', err);
+      res.render('error', { title: 'Error', message: 'Failed to join club' });
+    }
   } else {
-    req.flash('error_msg', 'Incorrect passcode.');
+    req.flash('error_msg', 'Incorrect passcode');
     res.redirect('/member/join');
   }
 };
 
 // GET admin page
 exports.admin_get = (req, res) => {
-  res.render('admin', { title: 'Admin Access' });
+  res.render('admin', { title: 'Become Admin' });
 };
 
 // POST admin upgrade
 exports.admin_post = async (req, res) => {
   const { passcode } = req.body;
-  const adminPass = process.env.ADMIN_PASSCODE || 'admin123';
+  const correctPasscode = process.env.ADMIN_PASSCODE || 'admin123';
 
-  if (passcode === adminPass) {
-    await User.updateAdmin(req.user.id, true);
-    req.flash('success_msg', 'You are now an admin!');
-    res.redirect('/');
+  if (passcode === correctPasscode) {
+    try {
+      await User.updateAdmin(req.user.id, true);
+      req.flash('success_msg', 'Admin privileges granted! You can now delete messages.');
+      res.redirect('/');
+    } catch (err) {
+      console.error('Admin upgrade error:', err);
+      res.render('error', { title: 'Error', message: 'Failed to upgrade to admin' });
+    }
   } else {
-    req.flash('error_msg', 'Incorrect admin passcode.');
+    req.flash('error_msg', 'Incorrect admin passcode');
     res.redirect('/member/admin');
   }
 };
