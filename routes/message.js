@@ -1,5 +1,3 @@
-// /routes/message.js
-
 const express = require('express');
 const router = express.Router();
 const { ensureAuthenticated, ensureAdmin } = require('../middleware/authMiddleware');
