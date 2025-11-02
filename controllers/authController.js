@@ -2,16 +2,18 @@ const { body, validationResult } = require('express-validator');
 const passport = require('passport');
 const User = require('../models/user');
 
-// GET signup
 exports.signup_get = (req, res) => {
-  res.render('signup', { title: 'Sign Up', errors: [], formData: {} });
+  res.render('signup', { 
+    title: 'Sign Up', 
+    errors: [], 
+    formData: {} 
+  });
 };
 
-// POST signup
 exports.signup_post = [
   body('first_name').trim().notEmpty().withMessage('First name is required'),
   body('last_name').trim().notEmpty().withMessage('Last name is required'),
-  body('username').isEmail().withMessage('Enter a valid email'),
+  body('username').isEmail().withMessage('Valid email is required'),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
   body('confirmPassword').custom((value, { req }) => {
     if (value !== req.body.password) {
@@ -20,7 +22,7 @@ exports.signup_post = [
     return true;
   }),
 
-  async (req, res, next) => {
+  async (req, res) => {
     const errors = validationResult(req);
     
     if (!errors.isEmpty()) {
@@ -35,6 +37,7 @@ exports.signup_post = [
 
     try {
       const existingUser = await User.findByUsername(username);
+      
       if (existingUser) {
         return res.render('signup', {
           title: 'Sign Up',
@@ -44,32 +47,32 @@ exports.signup_post = [
       }
 
       await User.create({ first_name, last_name, username, password });
-      req.flash('success_msg', 'Registration successful! Please log in.');
+      req.flash('success_msg', 'Registration successful! Please log in');
       res.redirect('/login');
     } catch (err) {
-      console.error('Signup error:', err);
-      res.render('error', { title: 'Error', message: 'Registration failed' });
+      console.error(err);
+      res.render('error', { 
+        title: 'Error', 
+        message: 'Registration failed' 
+      });
     }
   }
 ];
 
-// GET login
 exports.login_get = (req, res) => {
   res.render('login', { title: 'Log In' });
 };
 
-// POST login
 exports.login_post = passport.authenticate('local', {
-  successRedirect: '/',
+  successRedirect: '/messages',
   failureRedirect: '/login',
   failureFlash: true
 });
 
-// GET logout
 exports.logout_get = (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
     req.flash('success_msg', 'Logged out successfully');
-    res.redirect('/');
+    res.redirect('/messages');
   });
 };

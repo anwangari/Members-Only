@@ -9,32 +9,31 @@ const expressLayouts = require('express-ejs-layouts');
 
 const app = express();
 
-// Passport config
+// Passport configuration
 require('./config/passportConfig')(passport);
 
-// View engine
+// View engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(expressLayouts);
 app.set('layout', 'layout');
 
-// Body parser
+// Body parser middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Method override
+// Method override for DELETE requests
 app.use(methodOverride('_method'));
 
-// Session
+// Express session
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'secret',
     resave: false,
-    saveUninitialized: false,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 } // 24 hours
+    saveUninitialized: false
   })
 );
 
@@ -42,7 +41,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Flash messages
+// Connect flash
 app.use(flash());
 
 // Global variables
@@ -51,7 +50,6 @@ app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   res.locals.error = req.flash('error');
-  res.locals.title = 'Members Only';
   next();
 });
 
@@ -62,13 +60,10 @@ app.use('/member', require('./routes/member'));
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).render('error', { title: '404 Not Found', message: 'Page not found' });
-});
-
-// Error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).render('error', { title: 'Error', message: 'Something went wrong' });
+  res.status(404).render('error', { 
+    title: '404 Not Found', 
+    message: 'Page not found' 
+  });
 });
 
 module.exports = app;
