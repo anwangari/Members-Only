@@ -4,11 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
-    "testdb": "node scripts/testDatabase.js",
-    "seed": "node scripts/populateDb.js"
+    "seed": "node scripts/populateDb.js",
+    "testdb": "node scripts/testDatabase.js"
   },
   "repository": {
     "type": "git",
