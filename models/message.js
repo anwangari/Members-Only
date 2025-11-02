@@ -13,7 +13,8 @@ const Message = {
 
   async findAll() {
     const result = await pool.query(
-      `SELECT m.*, u.first_name, u.last_name
+      `SELECT m.id, m.title, m.text, m.created_at, m.user_id,
+              u.first_name, u.last_name
        FROM messages m
        JOIN users u ON m.user_id = u.id
        ORDER BY m.created_at DESC`
@@ -33,7 +34,10 @@ const Message = {
   },
 
   async delete(id) {
-    const result = await pool.query('DELETE FROM messages WHERE id = $1 RETURNING *', [id]);
+    const result = await pool.query(
+      'DELETE FROM messages WHERE id = $1 RETURNING *',
+      [id]
+    );
     return result.rows[0];
   }
 };

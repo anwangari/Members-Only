@@ -14,12 +14,18 @@ const User = {
   },
 
   async findByUsername(username) {
-    const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+    const result = await pool.query(
+      'SELECT * FROM users WHERE username = $1',
+      [username]
+    );
     return result.rows[0];
   },
 
   async findById(id) {
-    const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    const result = await pool.query(
+      'SELECT * FROM users WHERE id = $1',
+      [id]
+    );
     return result.rows[0];
   },
 
