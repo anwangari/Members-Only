@@ -1,40 +1,16 @@
 <h2>Sign Up</h2>
 
-<% if (errors.length > 0) { %>
-  <ul class="errors">
-    <% errors.forEach(function(error) { %>
-      <li><%= error.msg %></li>
-    <% }); %>
-  </ul>
-<% } %>
-
 <form action="/signup" method="POST">
-  <div>
-    <label for="first_name">First Name:</label>
-    <input type="text" id="first_name" name="first_name" value="<%= formData.first_name || '' %>" required>
-  </div>
-
-  <div>
-    <label for="last_name">Last Name:</label>
-    <input type="text" id="last_name" name="last_name" value="<%= formData.last_name || '' %>" required>
-  </div>
-
-  <div>
-    <label for="username">Email:</label>
-    <input type="email" id="username" name="username" value="<%= formData.username || '' %>" required>
-  </div>
-
-  <div>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required>
-  </div>
-
-  <div>
-    <label for="confirmPassword">Confirm Password:</label>
-    <input type="password" id="confirmPassword" name="confirmPassword" required>
-  </div>
-
+  <input name="first_name" placeholder="First Name" value="<%= formData.first_name || '' %>" required><br>
+  <input name="last_name" placeholder="Last Name" value="<%= formData.last_name || '' %>" required><br>
+  <input type="email" name="username" placeholder="Email" required><br>
+  <input type="password" name="password" placeholder="Password" required><br>
+  <input type="password" name="confirmPassword" placeholder="Confirm Password" required><br>
   <button type="submit">Sign Up</button>
 </form>
 
-<p>Already have an account? <a href="/login">Log in</a></p>
+<% if (errors.length > 0) { %>
+  <ul>
+    <% errors.forEach(e => { %><li><%= e.msg %></li><% }) %>
+  </ul>
+<% } %>

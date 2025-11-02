@@ -1,13 +1,5 @@
-<h2>Become an Admin</h2>
-
-<p>Enter the admin passcode to gain moderation privileges.</p>
-
+<h2>Admin Access</h2>
 <form action="/member/admin" method="POST">
-  <div>
-    <label for="passcode">Admin Passcode:</label>
-    <input type="password" id="passcode" name="passcode" required>
-  </div>
-
-  <button type="submit">Become Admin</button>
-  <a href="/">Cancel</a>
+  <input type="password" name="passcode" placeholder="Enter admin passcode" required>
+  <button type="submit">Upgrade</button>
 </form>

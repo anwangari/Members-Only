@@ -1,13 +1,5 @@
 <h2>Join the Club</h2>
-
-<p>Enter the secret passcode to become a member and see message authors.</p>
-
 <form action="/member/join" method="POST">
-  <div>
-    <label for="passcode">Secret Passcode:</label>
-    <input type="password" id="passcode" name="passcode" required>
-  </div>
-
-  <button type="submit">Join Club</button>
-  <a href="/">Cancel</a>
+  <input type="password" name="passcode" placeholder="Enter secret passcode" required>
+  <button type="submit">Join</button>
 </form>
